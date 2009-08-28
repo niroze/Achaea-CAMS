@@ -6,10 +6,10 @@ Alias = {}
 Alias_mt = {}
 
 function Alias:new()
-	 class = {}
-	 setmetatable(class, Alias_mt)
-	 Alias_mt.__index = Alias
-	 return (class)
+   class = {}
+   setmetatable(class, Alias_mt)
+   Alias_mt.__index = Alias
+   return (class)
 end
 
 -- Add an alias

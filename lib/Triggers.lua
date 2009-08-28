@@ -6,10 +6,10 @@ Trigger = {}
 Trigger_mt = {}
 
 function Trigger:new()
-	 class = {}
-	 setmetatable(class, Trigger_mt)
-	 Trigger_mt.__index = Trigger
-	 return (class)
+   class = {}
+   setmetatable(class, Trigger_mt)
+   Trigger_mt.__index = Trigger
+   return (class)
 end
 
 -----------------------------------------------------------------------

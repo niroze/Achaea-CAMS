@@ -6,10 +6,10 @@ Notify = {}
 Notify_mt = {}
 
 function Notify:new()
-	 class = {}
-	 setmetatable(class, Notify_mt)
-	 Notify_mt.__index = Notify
-	 return (class)
+   class = {}
+   setmetatable(class, Notify_mt)
+   Notify_mt.__index = Notify
+   return (class)
 end
 
 function Notify:send(what)
