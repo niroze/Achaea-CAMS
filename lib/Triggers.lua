@@ -14,15 +14,15 @@ end
 
 -----------------------------------------------------------------------
 -- Add trigger
--- 	name: 			name of the trigger (required)
---	group:			group name 
---	is_enabled:	1/0 (defaulted to 1)
---	glob:				matching string glob (required)
+-- 	name:                   name of the trigger (required)
+--	group:                  group name 
+--	is_enabled:             1/0 (defaulted to 1)
+--	glob:                   matching string glob (required)
 --	action:			what lua method to call (required)
 --	times:			how many times to keep alive (defaults to permanent)
---	priority:		positive integer, 1 to 1000
+--	priority:		positive integer, 1 to 1000, default 100
 -----------------------------------------------------------------------
-function Trigger:add(name, group, is_enabled, glob, action, times, priority)
+function Trigger:add(name, group, is_enabled, glob, action, times, priority, from)
 end
 
 -- Remove trigger by name

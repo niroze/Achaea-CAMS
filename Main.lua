@@ -1,7 +1,37 @@
-ROOT = "/Users/christopherhumphries/Achaea/Lua/CAMS/"
+------------------------------------------------------------------------
+-- ** ** CHANGE ME ** ** CHANGE ME ** ** CHANGE ME ** ** CHANGE ME ** **
+------------------------------------------------------------------------
+ROOT_PATH = "/Users/christopherhumphries/Achaea/Lua/CAMS/"
+------------------------------------------------------------------------
+-- ** ** CHANGE ME ** ** CHANGE ME ** ** CHANGE ME ** ** CHANGE ME ** **
+------------------------------------------------------------------------
+
+
+
+-- Setup the package.path to include all our files for require
+package.path = package.path .. ';' 
+   .. ROOT_PATH .. 'lib/?.lua' .. ';'            -- CAMS libraries
+   .. ROOT_PATH .. 'lib_external/?.lua' .. ';'   -- 3rd party libraries
+   .. ROOT_PATH .. 'config/?.lua' .. ';'         -- Configs (baseline variables defined)
+   .. ROOT_PATH .. 'plugins/?.lua'               -- Plugins
+	    
+-- Get our requires on
+require "luasql.sqlite4"  -- Database connectivity (store state, basically)
+require "Triggers"        -- TF trigger wrapper
+require "Aliases"         -- TF "alias" wrapper
+require "Settings"        -- CAMS settings (global and plugin use)
+require "Notify"          -- TF echo wrappers, colored notices (alert, debug, etc)
+
+
+-- Globals
+DATABASE_FILENAME = ROOT_PATH .. "cams.db"
+PLUGINS = {}
+
+
+-- Main
 Main = {}
 Main_mt = {}
-PLUGINS = {}
+
 
 function Main:new()
    class = {}
@@ -20,6 +50,9 @@ function Main:init()
    
    -- Load plugins
    self:load_plugins()
+
+   -- Initialize plugins
+   self:init_plugins()
 end
 
 -- Ensure all directories are correct and permissions are kosher, etc
@@ -28,11 +61,14 @@ end
 
 -- Connect to the SQLite3 Database and store the connection on this class
 function Main:load_database()
+   env = luasql.sqlite3()
+   con = env:connect(DATABASE_FILENAME)
+   self.database = con
 end
 
 -- Load all loadable plugins
 function Main:load_plugins()
-   plugin_root = ROOT .. "plugins/"
+   plugin_root = ROOT_PATH .. "plugins/"
    for plugin_file in io.popen("ls " .. plugin_root):lines() do
       if string.find(plugin_file,"Security.lua$") then 
 	 plugin_file_path = plugin_root .. plugin_file
@@ -43,10 +79,15 @@ function Main:load_plugins()
 	 plugin_loader_code() -- create a new instance of the plugin
 	 if PLUGINS[plugin_name]:load() == 1 then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
+	    self.plugins[plugin_name]:set_database_connection(self.database)
 	    print ("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
 	 end -- if
       end -- if
    end -- for
+end
+
+function Main:init_plugins()
+   -- loop through plugins, calling their init() function
 end
 
 m = Main:new()
