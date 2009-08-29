@@ -13,31 +13,31 @@ function Notify:new()
 end
 
 function Notify:send(what)
-	--tf_eval("/echo " .. what)
-	print("Notify:send(): " .. what)
+   --tf_eval("/echo " .. what)
+   print("[CAMS] Notify:send(): " .. what)
 end
 
 function Notify:debug(what)
-	message = "DEBUG: " .. what
-	self:send(message)
+   message = "DEBUG: " .. what
+   self:send(message)
 end
 
 function Notify:alert(what)
-	message = "ALERT: " .. what
-	self:send(message)
+   message = "ALERT: " .. what
+   self:send(message)
 end
 
 function Notify:warning(what)
-	message = "WARNING: " .. what
-	self:send(message)
+   message = "WARNING: " .. what
+   self:send(message)
 end
 
 function Notify:normal(what)
-	message = what
-	self:send(message)
+   message = what
+   self:send(message)
 end
 
 function Notify:critical(what)
-	message = "CRITICAL: " .. what
-	self:send(message)
+   message = "CRITICAL: " .. what
+   self:send(message)
 end
