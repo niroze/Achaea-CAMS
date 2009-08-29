@@ -16,7 +16,7 @@ package.path = package.path .. ';'
    .. ROOT_PATH .. 'plugins/?.lua'               -- Plugins
 	    
 -- Get our requires on
-require "luasql.sqlite4"  -- Database connectivity (store state, basically)
+require "luasql.sqlite3"  -- Database connectivity (store state, basically)
 require "Triggers"        -- TF trigger wrapper
 require "Aliases"         -- TF "alias" wrapper
 require "Settings"        -- CAMS settings (global and plugin use)
