@@ -45,6 +45,9 @@ function Main:init()
    -- Sanity check
    self:sanity_check()
    
+   -- Notify stored on this class to use globally
+   self.notify = Notify:new()
+
    -- Connect and initialize database
    self:load_database()
    
@@ -53,6 +56,7 @@ function Main:init()
 
    -- Initialize plugins
    self:init_plugins()
+   
 end
 
 -- Ensure all directories are correct and permissions are kosher, etc
