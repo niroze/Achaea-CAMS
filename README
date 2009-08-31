@@ -1,15 +1,14 @@
 CAMS is a system for extending functionality in TinyFugue in the Lua
 programming language.
 
-It is built to be modular, dynamic in loading of modules, provide all
-functionality needed to write modules without knowing how to code TF,
-and easy to use. CAMS is meant to be a platform for developing on TF
-without TF in the way. All TF activity is hidden and not used CAMS
-plugins.
+It is built to be modular and dynamic in loading of plugins, provide
+all functionality needed to write modules without knowing how to code
+in the TF macro language, and easy to use. CAMS is meant to be a
+platform for developing on TF without TF in the way. All TF activity
+is hidden and done behind the scenes through an API.
 
 This is mainly written for geeks, but in the end it should be easy for
 anyone that can follow a few instructions.
-
 
 
 Installation Requirements and How to Install:
