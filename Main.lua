@@ -66,6 +66,13 @@ function Main:load_database()
    self.database = con
 end
 
+-- Return database connection
+function Main:get_database()
+   return (self.database)
+end
+
+
+
 -- Load all loadable plugins
 function Main:load_plugins()
    plugin_root = ROOT_PATH .. "plugins/"
@@ -79,7 +86,6 @@ function Main:load_plugins()
 	 plugin_loader_code() -- create a new instance of the plugin
 	 if PLUGINS[plugin_name]:load() == 1 then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
-	    self.plugins[plugin_name]:set_database_connection(self.database)
 	    print ("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
 	 end -- if
       end -- if
@@ -90,5 +96,14 @@ function Main:init_plugins()
    -- loop through plugins, calling their init() function
 end
 
-m = Main:new()
-m:init()
+function Main:get_database()
+end
+
+function Main:tf(command)
+   -- tf_eval(command)
+   print "Main:tf() => " .. command
+end
+
+
+CAMS = Main:new()
+CAMS:init()

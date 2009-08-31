@@ -36,7 +36,7 @@ create index settings_setting_name_idx on settings (setting_name);
 -- 
 -- Settings for use by Plugins
 --
-drop table if exists settings_plugins
+drop table if exists settings_plugins;
 create table settings_plugins (
        plugin_name         varchar(40) unique not null,
        setting_name        varchar(40) unique not null,

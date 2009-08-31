@@ -24,7 +24,3 @@ end
 -- Called when the plugin is initialized by CAMS (NOT when it is loaded)
 function Plugin:init()
 end
-
--- A luasql database connect object is passed in, do with it as you wish but don't close it.
-function Plugin:set_database_connection(database_connection)
-end
