@@ -14,9 +14,12 @@ package.path = package.path .. ';'
    .. ROOT_PATH .. 'lib_external/?.lua' .. ';'   -- 3rd party libraries
    .. ROOT_PATH .. 'config/?.lua' .. ';'         -- Configs (baseline variables defined)
    .. ROOT_PATH .. 'plugins/?.lua'               -- Plugins
+
 	    
--- Get our requires on
+-- Non-local requirements
 require "luasql.sqlite3"  -- Database connectivity (store state, basically)
+
+-- Local requirements
 require "Triggers"        -- TF trigger wrapper
 require "Aliases"         -- TF "alias" wrapper
 require "Settings"        -- CAMS settings (global and plugin use)
@@ -24,14 +27,14 @@ require "Notify"          -- TF echo wrappers, colored notices (alert, debug, et
 
 
 -- Globals
-DATABASE_FILENAME = ROOT_PATH .. "cams.db"
+DATABASE_ROOT_PATH = ROOT_PATH .. "database/"
+DATABASE_FILENAME = DATABASE_ROOT_PATH .. "CAMS.db"
 PLUGINS = {}
 
 
 -- Main
 Main = {}
 Main_mt = {}
-
 
 function Main:new()
    class = {}
