@@ -1,0 +1,22 @@
+TinyFugue with the Lua patch 
+============================
+I found out about it via: 
+- http://forums.lusternia.com/index.php?showtopic=14128
+
+Follow those directions.
+
+
+Lua libraries That Need To Be Installed By You
+==============================================
+
+Luasql (with sqlite3 support builtin):
+- http://www.keplerproject.org/luasql/
+
+
+
+Included External Libraries
+===========================
+
+lunit (for running tests, optional):
+- http://www.mroth.net/lunit/
+- License: docs/lunit/LICENSE
