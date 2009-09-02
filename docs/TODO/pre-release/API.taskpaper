@@ -1,0 +1,45 @@
+Trigger API Class:
+- test add
+- test remove
+- test remove_group
+- test disable
+- test disable_group
+- test enable
+- test enable_group
+- test change_action
+
+Aliases API Class:
+- test add
+- test remove
+
+Notify API Class:
+- add coloring to different types of notifications
+- all logging of notifications
+- test new
+- test send
+- test debug
+- test alert
+- test warning
+- test normal
+- test critical
+
+Target API Class:
+- test new
+- test set
+- test get
+- test clear
+- implement multiple targets (targets can be switched)
+- notification of target status
+
+Prompt API Class:
+- test set
+- test get
+- test init (if trigger is created properly)
+- test set_and_init
+- test received
+- test register
+- test whoami
+- test version
+
+Settings API Class:
+- work out how to implement generic and dynamic loading of settings, maybe if settings/<plugin_name> exists, then load it before the plugin is initialized

@@ -1,0 +1,65 @@
+BookCopy:
+- test new
+- test alias works: /bookcopy <original journal to copy> <blank journal to copy to>
+- test triggers work for sending "more" when appropriate
+- test registering to receive prompt notification works
+- test storing all contents of a page is correct
+- change 'config pagelength' to 250 when reading pages, then reset to whatever the current value is
+- test writing of pages
+- add a final page to the book a disclaimer (in templates directory), something like, "I made the copies to the best of my ability and there may be mistakes." etc
+
+LetterManagement:
+- add triggers for notification of letters being sent
+- add notice function to make noticing letters arriving easier to notice
+- add a function to display letter information the same as blist
+
+Logging:
+- provide generic logging facilities
+- import Logging/* plugins
+
+Logging/City:
+- save only lines matching city channel to a file
+
+Logging/Clans:
+- save only lines matching clan to a file
+
+Logging/Everything:
+- log everything to a file 
+
+Logging/Tells:
+- save only tells to a file
+
+Occultist/Domination:
+- managing of entities, pacts, etc
+
+Occultist/Occultism:
+- managing of everything Occultism skillset
+
+Occultist/Tarot:
+- handles using tarot cards
+
+Occultist/TarotInscribe:
+- handles just the inscribing of tarot cards, automation functionality
+
+Occultist:
+- generic Occultist class, import Occultist/* plugins
+
+Riding:
+- handles all riding functionality (assumes Trans)
+
+Security:
+- handles security from theft, like rewearing things, storing gold in multiple layer deep containers, etc
+- would be nice to be able to audit the inventory for sigils and multiple bags, etc
+
+Shrine:
+- handles offering of corpses to shrines
+
+Tattoos:
+- handles tattoo management, ensuring tattoos are always there (if applicable)
+- ability to map a tattoo to a body part
+- provide utility commands to ink others also
+
+TodoList:
+- generic TODO list for in-game management of tasks
+- implement categories
+- sync to a journal, for more "realism"
