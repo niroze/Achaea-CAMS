@@ -41,3 +41,4 @@ function Notify:critical(what)
    message = "CRITICAL: " .. what
    self:send(message)
 end
+

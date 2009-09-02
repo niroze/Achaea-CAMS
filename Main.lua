@@ -91,7 +91,7 @@ function Main:load_plugins()
 	 plugin_file_code() -- load it into global namespace
 	 plugin_loader_code = loadstring('PLUGINS["' .. plugin_name .. '"]  = ' .. plugin_name .. ':new()')
 	 plugin_loader_code() -- create a new instance of the plugin
-	 if PLUGINS[plugin_name]:load() == 1 then
+	 if PLUGINS[plugin_name]:load() then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
 	    print ("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
 	 end -- if
