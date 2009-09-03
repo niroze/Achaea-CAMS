@@ -63,3 +63,12 @@ TodoList:
 - generic TODO list for in-game management of tasks
 - implement categories
 - sync to a journal, for more "realism"
+
+AlertNormal:
+- get list of what needs alerted about normally
+
+AlertCombat:
+- get list of what needs to be alerted about during combat
+- when target shield is down
+- what herbs get used for healing
+- when target is no longer prone
