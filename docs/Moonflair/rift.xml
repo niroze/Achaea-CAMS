@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+
+<plugin
+ name="Rift"
+ author="Trevize"
+ id="f9a86b675c4c314dab7a7f10"
+ language="Lua"
+ purpose="Rift Management"
+ save_state="y"
+ requires="4.40"
+ version="2.41">
+
+<description trim="y">
+<![CDATA[
+
+Rift Management 2.4.1
+
+IR - displays your rift normally, capturing information
+RIFT - displays your rift from memory
+RIFT <group> - same as RIFT for only one group
+RIFT BELOW <#> - shows all items below the specified amount
+RIFT <group> BELOW <#> - same as RIFT BELOW <#> for only one group
+RIFT GROUPS - shows what groups display
+RIFT <group> ON|OFF - enables or disables a group
+RIFT HELP - shows all rift commands
+
+RIFT TATTOOS - calculate how many tattoos you can ink
+RIFT TATTOOS <tattoo> - set the furthest tattoo you can ink
+RIFT RUNES - calculate how many runes you can sketch
+RIFT RUNES <rune> - set the furthest rune you can sketch
+
+Enjoy!
+
+-Trevize
+
+]]>
+</description>
+
+</plugin>
+
+
+<triggers>
+  <trigger
+   keep_evaluating="y"
+   match="^\d+h(, \d+m)?(, \d+e)?(, \d+w)? [@cexkdb]*(?: Vote)?-"
+   enabled="y"
+   regexp="y"
+   send_to="14"
+   sequence="25">
+    <send>
+      prompt.data = TriggerStyleRuns
+      EnableTrigger ("riftitem", false)
+    </send>
+  </trigger>
+
+  <trigger
+   enabled="y"
+   group="rift"
+   match="^Glancing into the Rift\, you see\:$"
+   regexp="y"
+   send_to="12"
+   sequence="100">
+    <send>
+      rift.reset ()
+      EnableTrigger ("riftitem", true)
+    </send>
+  </trigger>
+
+  <trigger
+   enabled="y"
+   group="rift"
+   match="^You (?:remove|store) \d+ ([a-z\' ]+?), bringing the total (?:in the Rift )?to (\d+)(?:, which is the maximum for that type of object)?\.$"
+   regexp="y"
+   send_to="12"
+   sequence="100">
+    <send>
+      rift.parse ("%1", "%2")
+      rift.save ()
+    </send>
+  </trigger>
+
+  <trigger
+   group="rift"
+   match="^\s{2}\[\s*(\d+)\] ([a-z\' ]+?)(?:\s+\[\s*(\d+)\] ([a-z\' ]+?))?(?:\s+\[\s*(\d+)\] ([a-z\' ]+))?$"
+   name="riftitem"
+   regexp="y"
+   send_to="14"
+   sequence="100">
+    <send>
+      rift.parse ("%2", "%1")
+      if "%3" ~= "" then rift.parse ("%4", "%3") end
+      if "%5" ~= "" then rift.parse ("%6", "%5") end
+      rift.save ()
+    </send>
+  </trigger>
+</triggers>
+
+
+<aliases>
+  <alias
+   match="^\s*rift .+$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="101">
+    <send>rift.help ()</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.display ()</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+(herbs|concoct|concoctables|inks|comms|commodities|crys|crystals|misc|miscellaneous)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.display ("%1")</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+(herbs|concoct|concoctables|inks|comms|commodities|crys|crystals|misc|miscellaneous)\s+(on|off)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.groupset ("%1", "%2")</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+(herbs|concoct|concoctables|inks|comms|commodities|crys|crystals|misc|miscellaneous)\s+below\s+(\d+)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.below ("%2", "%1")</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+below\s+(\d+)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.below ("%1")</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+groups\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+  <send>rift.groupsdisplay ()</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+tattoos\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.tattoos.run ()</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+tattoos\s+(\w+)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.tattoos.set ("%1")</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+runes\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.runes.run ()</send>
+  </alias>
+
+  <alias
+   match="^\s*rift\s+runes\s+(\w+)\s*$"
+   enabled="y"
+   group="rift"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>rift.runes.set ("%1")</send>
+  </alias>
+</aliases>
+
+
+<script>
+<![CDATA[
+
+-- ============
+--  foundation
+-- ============
+
+table.save = function (mushvar, luavar, luavarname)
+  if type (luavar) == "table" then
+    local var = luavarname .. " = {}\r\n"
+    for k, v in pairs (luavar) do
+      if type (v) == "boolean" or type (v) == "number" or type (v) == "string" then
+        if type (k) == "string" then k = string.format ("%q", k) end
+        local key = "[" .. k .. "]"
+        local val
+        if type (v) == "string" then val = string.format ("%q", v) else val = tostring (v) end
+        var = var .. luavarname .. key .. " = " .. val .. "\r\n"
+      elseif type (v) == "table" then
+        local keyname = k
+        if type (keyname) == "string" then keyname = string.format ("%q", keyname) end
+        var = var .. table.save (false, luavar[k], luavarname .. "[" ..keyname .. "]")
+      end -- if
+    end -- for
+    if mushvar then SetVariable (mushvar, var) else return var end
+  end -- if
+end -- func
+
+table.load = function (name)
+  if GetVariable (name) then
+    loadstring (GetVariable (name)) ()
+    return true
+  end -- if
+end -- func
+
+ansicolor = function (fore, back)
+  local bold = false
+  local fore = tonumber (fore) or 7
+  if fore >= 0 and fore <= 7 then
+    fore = fore + 30
+  elseif fore >= 8 and fore <= 15 then
+    fore = fore + 22
+    bold = true
+  else
+    fore = 37
+  end -- if
+  local back = tonumber (back) or 0
+  if back > 0 and back <= 7 then
+    back = back + 40
+  else
+    back = 40
+  end -- if
+  if not bold then
+    return ANSI (0, fore, back)
+  else
+    return ANSI (0, fore, 1, back)
+  end -- if
+end -- func
+
+string.proper = function (x)
+  return string.upper (string.sub(x, 1, 1)) .. string.lower (string.sub(x, 2))
+end -- func
+
+sortedpairs = function (tbl)
+  local i = 0
+  local tmp = {}
+  for n in pairs (tbl) do table.insert (tmp, n) end
+  table.sort (tmp)
+  return function ()
+    i = i + 1
+    if tmp[i] ~= nil then return tmp[i], tbl[tmp[i]] end
+  end -- func
+end -- func
+
+prompt = {}
+prompt.data = false
+prompt.draw = function ()
+  if prompt.data then
+    for k,v in ipairs (prompt.data) do
+      ColourTell (RGBColourToName (v.textcolour),
+                  RGBColourToName (v.backcolour),
+                  v.text)
+    end -- for
+  end -- if
+  Note ("")
+end -- func
+
+
+
+-- ==============
+--  Rift Drawing
+-- ==============
+
+rift = {
+  furthest = {
+    tattoo = "chameleon",
+    rune   = "loshre",
+    },
+
+  cats = {"herbs", "concoct", "inks", "comms", "crys", "misc"},
+  long = {concoctables = "concoct", commodities = "comms", crystals = "crys", miscellaneous = "misc"},
+  short = {concoct = "concoctables", comms = "commodities", crys = "crystals", misc = "miscellaneous"},
+
+  table = {
+    herbs = {
+      ["prickly ash bark"] = "ash",
+      ["bayberry bark"]    = "bayberry",
+      ["bellwort flower"]  = "bellwort",
+      ["bloodroot leaf"]   = "bloodroot",
+      ["black cohosh"]     = "cohosh",
+      ["echinacea"]        = "echinacea",
+      ["ginseng root"]     = "ginseng",
+      ["goldenseal root"]  = "goldenseal",
+      ["hawthorn berry"]   = "hawthorn",
+      ["irid moss"]        = "moss",
+      ["kelp"]             = "kelp",
+      ["kola nut"]         = "kola",
+      ["lobelia seed"]     = "lobelia",
+      ["myrrh gum"]        = "myrrh",
+      ["prickly pear"]     = "pear",
+      ["sileris"]          = "sileris",
+      ["skullcap"]         = "skullcap",
+      ["slippery elm"]     = "elm",
+      ["valerian"]         = "valerian",
+      },
+    concoct = {
+      ["eagle's feather"]     = "feather",
+      ["ginger root"]         = "ginger",
+      ["kuzu root"]           = "kuzu",
+      ["venom sac"]           = "sac",
+      ["sidewinder skin"]     = "skin",
+      ["lady's slipper"]      = "slipper",
+      ["lady's slipper root"] = "slipper",
+      },
+    inks = {
+      ["blue ink"]   = "blue",
+      ["gold ink"]   = "gold",
+      ["green ink"]  = "green",
+      ["purple ink"] = "purple",
+      ["red ink"]    = "red",
+      ["yellow ink"] = "yellow",
+      },
+    comms = {
+      ["bone"]                 = "bone",
+      ["cloth"]                = "cloth",
+      ["coal"]                 = "coal",
+      ["diamond dust"]         = "dust",
+      ["gems"]                 = "gems",
+      ["gold"]                 = "gold",
+      ["piece of stag's"]      = "horn",
+      ["piece of stag's horn"] = "horn",
+      ["ice"]                  = "ice",
+      ["iron"]                 = "iron",
+      ["leather"]              = "leather",
+      ["obsidian"]             = "obsidian",
+      ["platinum"]             = "platinum",
+      ["rope"]                 = "rope",
+      ["silver bar"]           = "silver",
+      ["steel"]                = "steel",
+      ["wood"]                 = "wood",
+      },
+    crys = {
+      ["crystal cube"]       = "cube",
+      ["crystal cylinder"]   = "cylinder",
+      ["crystal diamond"]    = "diamond",
+      ["crystal disc"]       = "disc",
+      ["crystal egg"]        = "egg",
+      ["crystal pentagon"]   = "pentagon",
+      ["crystal polyhedr"]   = "polyhedron",
+      ["crystal polyhedron"] = "polyhedron",
+      ["crystal pyramid"]    = "pyramid",
+      ["crystal sphere"]     = "sphere",
+      ["crystal spiral"]     = "spiral",
+      ["crystal torus"]      = "torus",
+      },
+    misc = {
+      ["blueberry"] = "blueberry",
+      ["gleam"]     = "gleam",
+      ["lifestone"] = "lifestone",
+      ["weed"]      = "weed",
+      },
+    },
+
+  current = {
+    herbs   = {ash       = 0, bayberry  = 0, bellwort  =  0, bloodroot  = 0,
+               cohosh    = 0, echinacea = 0, ginseng    = 0, goldenseal = 0,
+               hawthorn  = 0, moss      = 0, kelp       = 0, kola       = 0,
+               lobelia   = 0, myrrh     = 0, pear       = 0, sileris    = 0,
+               skullcap  = 0, elm       = 0, valerian   = 0},
+    concoct = {feather   = 0, ginger    = 0, kuzu       = 0, sac        = 0,
+               skin      = 0, slipper   = 0},
+    inks    = {blue      = 0, gold      = 0, green      = 0, purple     = 0,
+               red       = 0, yellow    = 0},
+    comms   = {bone      = 0, cloth     = 0, coal       = 0, dust       = 0,
+               gems      = 0, gold      = 0, horn       = 0, ice        = 0,
+               iron      = 0, leather   = 0, obsidian   = 0, platinum   = 0,
+               rope      = 0, silver    = 0, steel      = 0, wood       = 0},
+    crys    = {cube      = 0, cylinder  = 0, diamond    = 0, disc       = 0,
+               egg       = 0, pentagon  = 0, polyhedron = 0, pyramid    = 0,
+               sphere    = 0, spiral    = 0, torus      = 0},
+    misc    = {blueberry = 0, gleam     = 0, lifestone  = 0, weed       = 0},
+    },
+
+  reset = function ()
+    for type, tab in pairs (rift.current) do
+      for k in pairs (tab) do tab[k] = 0 end
+    end -- for
+  end, -- function
+
+  parse = function (item, amount)
+    local x = false
+    for k, v in pairs (rift.table) do
+      if v[item] then
+        rift.current[k][v[item]] = amount
+        x = true
+      end -- if
+    end -- for
+    if not x then
+      AnsiNote (ansicolor (8), "[rift.parse]: ",
+                ansicolor (9), "Unrecognised Rift Item: " .. amount .. " " .. item)
+    end -- if
+  end, -- func
+
+  below = function (num, group)
+    if not group then
+      rift.min = tonumber(num)
+      rift.display ()
+    else
+      group = rift.long[group] or group
+      rift.min = tonumber(num)
+      rift.display (group)
+    end -- if
+  end, -- func
+
+  display = function (spec)
+    if spec then string.lower (spec) end
+    spec = rift.long[spec] or spec
+    AnsiNote (ansicolor (2), "Your rift contains:")
+    for k, v in ipairs (rift.cats) do
+      if (spec == v) or ((not spec) and rift.groups[v]) then
+        AnsiNote (ansicolor (12), "\n" .. string.proper (rift.short[v] or v))
+        rift.displaygroup (v)
+      end -- if
+    end -- for
+    prompt.draw ()
+    rift.min = nil
+  end, -- func
+
+  displaygroup = function (category)
+    local itempos = 1
+    local riftline = {}
+    for item, itemnum in sortedpairs (rift.current[category]) do
+      if (not rift.min) or (tonumber(itemnum) < rift.min) then
+        riftline[itempos] = {item = item, itemnum = itemnum}
+        if itempos == 3 then
+          AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[1].itemnum),
+                    ansicolor (4), "] ", ansicolor (), string.format ("%-13s", riftline[1].item),
+                    ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[2].itemnum),
+                    ansicolor (4), "] ", ansicolor (), string.format ("%-13s", riftline[2].item),
+                    ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[3].itemnum),
+                    ansicolor (4), "] ", ansicolor (), riftline[3].item)
+          riftline = {}
+          itempos = 1
+        else itempos = itempos + 1 end
+      end -- if
+    end -- for
+    if itempos == 2 then
+          AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[1].itemnum),
+                    ansicolor (4), "] ", ansicolor (), riftline[1].item)
+    elseif itempos == 3 then
+          AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[1].itemnum),
+                    ansicolor (4), "] ", ansicolor (), string.format ("%-13s", riftline[1].item),
+                    ansicolor (4), " [", ansicolor (), string.format ("%4s", riftline[2].itemnum),
+                    ansicolor (4), "] ", ansicolor (), riftline[2].item)
+    end -- if
+  end, -- func
+
+  groupset = function (group, state)
+    group, state = string.lower (group), string.lower (state)
+    group = rift.long[group] or group
+    AnsiNote ("You turn " .. state .. " the " .. (rift.short[group] or group) .. " rift group.")
+    rift.groups[group] = (state == "on")
+    rift.save ()
+    prompt.draw ()
+  end, -- func
+
+  groupsdisplay = function ()
+    AnsiNote (ansicolor (), "Rift Groups\n-----------\n")
+    for k, v in ipairs (rift.cats) do
+      AnsiNote (ansicolor (), string.format ("%-8s %4s", string.proper (v) .. ":", rift.groups[v] and "on" or "off"))
+    end -- for
+    prompt.draw ()
+  end, -- func
+
+  help = function ()
+    AnsiNote (ansicolor (), "Rift Commands\n-------------")
+    AnsiNote (ansicolor (), "IR - displays your rift normally, capturing information")
+    AnsiNote (ansicolor (), "RIFT - displays your rift from memory")
+    AnsiNote (ansicolor (), "RIFT <group> - same as RIFT for only one group")
+    AnsiNote (ansicolor (), "RIFT BELOW <#> - shows all items below the specified amount")
+    AnsiNote (ansicolor (), "RIFT <group> BELOW <#> - same as RIFT BELOW <#> for one group")
+    AnsiNote (ansicolor (), "RIFT GROUPS - shows what groups display")
+    AnsiNote (ansicolor (), "RIFT <group> ON|OFF - enables or disables a group")
+    AnsiNote (ansicolor (), "RIFT HELP - shows all rift commands")
+    AnsiNote (ansicolor (), "\nRift Modules\n------------")
+    AnsiNote (ansicolor (), "RIFT TATTOOS - calculate how many tattoos you can ink")
+    AnsiNote (ansicolor (), "RIFT TATTOOS <tattoo> - set the furthest tattoo you can ink")
+    AnsiNote (ansicolor (), "RIFT RUNES - calculate how many runes you can sketch")
+    AnsiNote (ansicolor (), "RIFT RUNES <rune> - set the furthest rune you can sketch")
+    prompt.draw ()
+  end, -- func
+
+  finish = function ()
+    EnableTrigger ("riftitem", false)
+    prompt.draw ()
+  end, -- func
+
+  groups = {
+    herbs   = true,
+    concoct = false,
+    inks    = false,
+    comms   = false,
+    crys    = false,
+    misc    = false,
+    },
+
+  save = function ()
+    local fullvar = table.save (false, rift.current, "rift.current")
+       .. "\r\n" .. table.save (false, rift.groups, "rift.groups")
+       .. "\r\n" .. table.save (false, rift.furthest, "rift.furthest")
+    SetVariable ("rift", fullvar)
+  end, -- func
+
+  }
+
+table.load ("rift")
+
+
+
+-- ======================
+--  Rift Module: Tattoos
+-- ======================
+
+rift.tattoos = {
+
+  order = {"firefly", "moss", "feather", "shield", "mindseye", "hammer", "cloak",
+           "bell", "crystal", "moon", "starburst", "boar", "web", "tentacle",
+           "hourglass", "brazier", "prism", "tree", "megalith", "ox", "chameleon"},
+
+  table = {
+    firefly   = {yellow = 1},
+    moss      = {blue = 1, red = 1, yellow = 1},
+    feather   = {blue = 2, red = 1},
+    shield    = {green = 1, red = 2},
+    mindseye  = {blue = 2, green = 1},
+    hammer    = {purple = 1, red = 2},
+    cloak     = {blue = 3},
+    bell      = {blue = 3, red = 2},
+    crystal   = {green = 1, purple = 1, yellow = 1},
+    moon      = {blue = 1, red =  1, yellow = 1},
+    starburst = {blue = 1, gold =  1, green = 1, purple = 1, red = 1, yellow = 1},
+    boar      = {purple = 1, red = 2},
+    web       = {green = 1, yellow = 1},
+    tentacle  = {green = 2, purple = 1},
+    hourglass = {blue = 1, yellow = 2},
+    brazier   = {red = 2, yellow = 2},
+    prism     = {blue = 1, green = 1, purple = 1, red = 1, yellow = 1},
+    tree      = {green = 5},
+    megalith  = {gold = 2},
+    ox        = {gold = 1, red = 1, yellow = 1, blue = 1},
+    chameleon = {gold = 1, purple = 1, yellow = 1},
+    },
+
+  getnum = function (tattoo)
+    local num
+    for k, v in pairs (rift.tattoos.table[tattoo]) do
+      local i = math.floor (rift.current.inks[k] / v)
+      if not num or i < num then num = i end
+    end -- for
+    return num
+  end, -- func
+
+  set = function (x)
+    x = string.lower (x)
+    if rift.tattoos.table[x] then
+      AnsiNote (ansicolor (), "Your furthest tattoo is now \"" .. x .. "\".")
+      rift.furthest.tattoo = x
+    else
+      AnsiNote (ansicolor (), "No tattoo by the name \"" .. x .. "\".")
+    end -- if
+    prompt.draw ()
+  end, -- func
+
+  run = function ()
+    local tattoolist = {}
+    for k, v in ipairs (rift.tattoos.order) do
+      tattoolist[v] = true
+      if v == rift.furthest.tattoo then do break end end
+    end -- for
+    AnsiNote (ansicolor (2), "You can ink the following tattoos:\n")
+    local tattoopos = 1
+    local tattooline = {}
+    for k in sortedpairs (tattoolist) do
+      tattooline[tattoopos] = {tattoo = k, num = rift.tattoos.getnum (k)}
+      if tattoopos == 3 then
+        AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[1].num),
+                  ansicolor (4), "] ", ansicolor (), string.format ("%-13s", tattooline[1].tattoo),
+                  ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[2].num),
+                  ansicolor (4), "] ", ansicolor (), string.format ("%-13s", tattooline[2].tattoo),
+                  ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[3].num),
+                  ansicolor (4), "] ", ansicolor (), tattooline[3].tattoo)
+        tattooline = {}
+        tattoopos = 1
+      else tattoopos = tattoopos + 1 end
+    end -- for
+    if tattoopos == 2 then
+      AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[1].num),
+                ansicolor (4), "] ", ansicolor (), tattooline[1].tattoo)
+    elseif tattoopos == 3 then
+      AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[1].num),
+                ansicolor (4), "] ", ansicolor (), string.format ("%-13s", tattooline[1].tattoo),
+                ansicolor (4), " [", ansicolor (), string.format ("%4s", tattooline[2].num),
+                ansicolor (4), "] ", ansicolor (), tattooline[2].tattoo)
+    end -- if
+    prompt.draw ()
+  end, -- func
+  }
+
+
+
+-- ====================
+--  Rift Module: Runes
+-- ====================
+
+rift.runes = {
+
+  order = {"kena", "uruz", "fehu", "pithakhan", "jera", "algiz", "berkana",
+           "inguz", "wunjo", "lagul", "lagua", "laguz", "sowulu", "gebo",
+           "gebu", "gular", "hugalaz", "sleizak", "raido", "nauthiz",
+           "mannaz", "nairat", "eihwaz", "dagaz", "thurisaz", "tiwaz",
+           "othala", "isaz", "loshre"},
+
+  table = {
+    kena      = {red = 1},
+    uruz      = {blue = 1, yellow = 1},
+    fehu      = {red = 1},
+    pithakhan = {red = 1},
+    jera      = {purple = 1},
+    algiz     = {green = 1},
+    berkana   = {yellow = 3},
+    inguz     = {red = 1},
+    wunjo     = {red = 1},
+    lagul     = {purple = 1},
+    lagua     = {purple = 1},
+    laguz     = {purple = 1},
+    sowulu    = {red = 1},
+    gebo      = {gold = 1},
+    gebu      = {gold = 1},
+    gular     = {red = 1},
+    hugalaz   = {blue = 1},
+    sleizak   = {blue = 1},
+    raido     = {green = 1},
+    nauthiz   = {blue = 1, yellow = 1},
+    mannaz    = {red = 1},
+    nairat    = {yellow = 1},
+    eihwaz    = {blue = 1, yellow = 1},
+    dagaz     = {red = 1, green = 1},
+    thurisaz  = {red = 1, blue = 1},
+    tiwaz     = {red = 2, blue = 1},
+    othala    = {red = 5},
+    isaz      = {blue = 1, red = 1},
+    loshre    = {blue = 1},
+    },
+
+  getnum = function (rune)
+    local num
+    for k, v in pairs (rift.runes.table[rune]) do
+      local i = math.floor (rift.current.inks[k] / v)
+      if not num or i < num then num = i end
+    end -- for
+    return num
+  end, -- func
+
+  set = function (x)
+    x = string.lower (x)
+    if rift.runes.table[x] then
+      AnsiNote (ansicolor (), "Your furthest rune is now \"" .. x .. "\".")
+      rift.furthest.rune = x
+    else
+      AnsiNote (ansicolor (), "No rune by the name \"" .. x .. "\".")
+    end -- if
+    prompt.draw ()
+  end, -- func
+
+  run = function ()
+    local runelist = {}
+    for k, v in ipairs (rift.runes.order) do
+      runelist[v] = true
+      if v == rift.furthest.rune then do break end end
+    end -- for
+    AnsiNote (ansicolor (2), "You can sketch the following runes:\n")
+    local runepos = 1
+    local runeline = {}
+    for k in sortedpairs (runelist) do
+      runeline[runepos] = {rune = k, num = rift.runes.getnum (k)}
+      if runepos == 3 then
+        AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[1].num),
+                  ansicolor (4), "] ", ansicolor (), string.format ("%-13s", runeline[1].rune),
+                  ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[2].num),
+                  ansicolor (4), "] ", ansicolor (), string.format ("%-13s", runeline[2].rune),
+                  ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[3].num),
+                  ansicolor (4), "] ", ansicolor (), runeline[3].rune)
+        runeline = {}
+        runepos = 1
+      else runepos = runepos + 1 end
+    end -- for
+    if runepos == 2 then
+      AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[1].num),
+                ansicolor (4), "] ", ansicolor (), runeline[1].rune)
+    elseif runepos == 3 then
+      AnsiNote (ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[1].num),
+                ansicolor (4), "] ", ansicolor (), string.format ("%-13s", runeline[1].rune),
+                ansicolor (4), " [", ansicolor (), string.format ("%4s", runeline[2].num),
+                ansicolor (4), "] ", ansicolor (), runeline[2].rune)
+    end -- if
+    prompt.draw ()
+  end, -- func
+  }
+]]>
+</script>
+
+</muclient>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+ name="Critcounter"
+ author="Trevize"
+ id="f2e37305f41d1e85b87ee9b3"
+ language="Lua"
+ purpose="Critical Hit Counter"
+ save_state="y"
+ requires="4.40"
+ version="1.00">
+
+<description trim="y">
+<![CDATA[
+
+Critcounter version 1.0.0
+
+Counts crits. Just do CRITS to see them. CRITS HELP shows all the commands.
+
+You'll need to trigger your attack messages. Just make them send to 'execute' and do critcounter_hit.
+
+-Trevize
+
+]]>
+</description>
+
+</plugin>
+
+
+<triggers>
+  <trigger
+   keep_evaluating="y"
+   match="^\d+h(, \d+m)?(, \d+e)?(, \d+w)? [@cexkdb]*(?: Vote)?-"
+   enabled="y"
+   regexp="y"
+   send_to="14"
+   sequence="25">
+    <send>prompt.data = TriggerStyleRuns</send>
+  </trigger>
+
+  <trigger
+   enabled="y"
+   ignore_case="y"
+   keep_evaluating="y"
+   match="^You have scored an? (.*critical) hit[!]{1,3}$"
+   regexp="y"
+   send_to="12"
+   sequence="100">
+    <send>
+      x = critcounter.parse["%1"]
+     if x then critcounter.add (x) end
+    </send>
+  </trigger>
+</triggers>
+
+
+
+<aliases>
+  <alias
+   match="^\s*crits .+$"
+   enabled="y"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="101">
+    <send>critcounter.help ()</send>
+  </alias>
+
+  <alias
+   match="^\s*crits\s*$"
+   enabled="y"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>critcounter.run ()</send>
+  </alias>
+
+  <alias
+   match="^\s*crits\s+(on|off)\s*$"
+   enabled="y"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>critcounter.enable ("%1")</send>
+  </alias>
+
+  <alias
+   match="^\s*crits\s+reset\s+(session|overall)(?:\s+(confirm))?\s*$"
+   enabled="y"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>critcounter.reset ("%1", "%2")</send>
+  </alias>
+
+  <alias
+   match="^critcounter\_hit$"
+   enabled="y"
+   group="critcounter"
+   regexp="y"
+   send_to="12"
+   ignore_case="y"
+   sequence="100">
+    <send>critcounter.hit ()</send>
+  </alias>
+</aliases>
+
+
+
+
+<script>
+<![CDATA[
+
+-- ============
+--  foundation
+-- ============
+
+table.save = function (mushvar, luavar, luavarname)
+  if type (luavar) == "table" then
+    local var = ""
+    for k, v in pairs (luavar) do
+      if type (v) == "boolean" or type (v) == "number" or type (v) == "string" then
+        if type (k) == "string" then k = string.format ("%q", k) end
+        local key = "[" .. k .. "]"
+        local val
+        if type (v) == "string" then val = string.format ("%q", v) else val = tostring (v) end
+        var = var .. luavarname .. key .. " = " .. val .. "\r\n"
+      elseif type (v) == "table" then
+        local keyname = k
+        if type (keyname) == "string" then keyname = string.format ("%q", keyname) end
+        var = var .. table.save (false, luavar[k], luavarname .. "[" ..keyname .. "]")
+      end -- if
+    end -- for
+    if mushvar then SetVariable (mushvar, var) else return var end
+  end -- if
+end -- func
+
+table.load = function (name)
+  if GetVariable (name) then
+    loadstring (GetVariable (name)) ()
+    return true
+  end -- if
+end -- func
+
+ansicolor = function (fore, back)
+  local bold = false
+  local fore = tonumber (fore) or 7
+  if fore >= 0 and fore <= 7 then
+    fore = fore + 30
+  elseif fore >= 8 and fore <= 15 then
+    fore = fore + 22
+    bold = true
+  else
+    fore = 37
+  end -- if
+  local back = tonumber (back) or 0
+  if back > 0 and back <= 7 then
+    back = back + 40
+  else
+    back = 40
+  end -- if
+  if not bold then
+    return ANSI (0, fore, back)
+  else
+    return ANSI (0, fore, 1, back)
+  end -- if
+end -- func
+
+prompt = {}
+prompt.data = false
+prompt.draw = function ()
+  if prompt.data then
+    for k,v in ipairs (prompt.data) do
+      ColourTell (RGBColourToName (v.textcolour),
+                  RGBColourToName (v.backcolour),
+                  v.text)
+    end -- for
+    Note ("")
+  end -- if
+end -- func
+
+
+
+-- ==============
+--  Critcounter
+-- ==============
+
+critcounter = {
+
+  enabled = true,
+
+  table = {
+    ["Critical"] = "crit",
+    ["Crushing"] = "ccrit",
+    ["Obliterating"] = "ocrit",
+    ["Annihilatingly"] = "acrit",
+    ["World-Shattering"] = "wscrit",
+    },
+
+  parse = {
+    ["CRITICAL"] = "crit",
+    ["CRUSHING CRITICAL"] = "ccrit",
+    ["OBLITERATING CRITICAL"] = "ocrit",
+    ["ANNIHILATINGLY POWERFUL CRITICAL"] = "acrit",
+    ["WORLD-SHATTERING CRITICAL"] = "wscrit",
+    },
+
+  overall = {hit = 0, crit = 0, ccrit = 0, ocrit = 0, acrit = 0, wscrit = 0, tcrit = 0},
+
+  session = {hit = 0, crit = 0, ccrit = 0, ocrit = 0, acrit = 0, wscrit = 0, tcrit = 0},
+
+  add = function (crit)
+    if critcounter.enabled then
+      critcounter.overall[crit] = critcounter.overall[crit] + 1
+      critcounter.session[crit] = critcounter.session[crit] + 1
+      critcounter.overall.tcrit = critcounter.overall.tcrit + 1
+      critcounter.session.tcrit = critcounter.session.tcrit + 1
+      critcounter.save ()
+    end -- if
+  end, -- func
+
+  hit = function ()
+    if critcounter.enabled then
+      critcounter.overall.hit = critcounter.overall.hit + 1
+      critcounter.session.hit = critcounter.session.hit + 1
+      critcounter.save ()
+    end -- if
+  end, -- func
+  
+  reset = function (section, confirmation)
+    sectionbool = (string.lower (section) == "overall")
+    if string.lower (confirmation) == "confirm" then      
+      AnsiNote (ansicolor (), "Critcounter " .. ((not sectionbool) and "session " or "") .. "reset.")
+      for k, v in pairs (critcounter.session) do critcounter.session[k] = 0 end
+      if sectionbool then for k, v in pairs (critcounter.overall) do critcounter.overall[k] = 0 end end
+      critcounter.save ()
+    else
+      AnsiNote (ansicolor (), "Are you sure you wish to reset the " ..
+               (sectionbool and "entire critcounter" or "critcounter session") .. "?")
+      AnsiNote (ansicolor (), "If so, do CRITS RESET " .. string.upper (section) .. " CONFIRM.")
+    end -- if
+    prompt.draw ()
+  end, -- func
+
+  enable = function (textbool)
+    local bool = (string.lower (textbool) == "on")
+    textbool = bool and "enabled" or "disabled"
+    AnsiNote (ansicolor (), "Critcounter " .. textbool .. ".")
+    critcounter.enabled = bool
+    prompt.draw ()
+  end, -- func
+
+  run = function ()
+    local overall = critcounter.overall
+    local session = critcounter.session
+    local getpercent = critcounter.getpercent
+    AnsiNote (ansicolor (7), "\nCrit Counter Status: ",
+              ansicolor (critcounter.enabled and 10 or 9),
+              (critcounter.enabled and "enabled" or "disabled"))
+    AnsiNote (ansicolor (7), "\nCrital Hits:")
+    AnsiNote (ansicolor (7), string.rep (" ", 28) .. "Overall" ..
+              string.rep (" ", 15) .. "Current Session")
+    AnsiNote (ansicolor (7), " Type of hit   " .. 
+              string.rep ("      Number   %hit  %crit", 2) .. "\n")
+    AnsiNote (ansicolor (7), " Total Hits      " ..
+              string.format (" %9s", overall.hit) ..
+              string.rep (" ", 16) .. string.format ("%10s", session.hit))
+    AnsiNote (ansicolor (7), " Total Criticals " ..
+              string.format (" %9s", overall.tcrit) ..
+              string.format (" %6s", getpercent (overall.hit, overall.tcrit)) ..
+               string.rep (" ", 9) .. string.format ("%10s", session.tcrit) ..
+              string.format (" %6s\n", getpercent (session.hit, session.tcrit)))
+    for k, v in ipairs ({"Critical", "Crushing", "Obliterating", "Annihilatingly", "World-Shattering"}) do
+      local crit = critcounter.table[v]
+      AnsiNote (ansicolor (7), string.format (" %-16s", v) ..
+                string.format (" %9s", overall[crit]) ..
+                string.format (" %6s", getpercent (overall.hit, overall[crit])) ..
+                string.format (" %6s", getpercent (overall.tcrit, overall[crit])) ..
+                string.format ("  %10s", session[crit]) ..
+                string.format (" %6s", getpercent (session.hit, session[crit])) ..
+                string.format (" %6s", getpercent (session.tcrit, session[crit])))
+    end -- for
+    prompt.draw ()
+  end, -- func
+
+  getpercent = function (x, y)
+    if y == 0 then
+      return "0.00"
+    else
+      return string.format ("%.2f", math.floor (y / x * 10000 + 0.5) / 100)
+    end -- if
+  end, -- func
+
+  help = function ()
+    AnsiNote (ansicolor (), "Critcounter Commands")
+    AnsiNote (ansicolor (), "--------------------")
+    AnsiNote (ansicolor (), " CRITS ON|OFF - enable or disable the critcounter")
+    AnsiNote (ansicolor (), " CRITS RESET SESSION - reset the current session")
+    AnsiNote (ansicolor (), " CRITS RESET OVERALL - reset the entire critcounter")
+    AnsiNote (ansicolor (), " CRITS HELP - display the critcounter help\n")
+    AnsiNote (ansicolor (), " Note: to count hits, make a trigger send to")
+    AnsiNote (ansicolor (), "       'execute' and send critcounter_hit")
+    prompt.draw ()
+  end, -- func
+
+  save = function ()
+    local fullvar = table.save (false, critcounter.overall, "critcounter.overall")
+                 .. table.save (false, critcounter.session, "critcounter.session")
+    SetVariable ("critcounter", fullvar)
+  end, -- func
+  }
+
+table.load ("critcounter")
+
+]]>
+</script>
+
+</muclient>
