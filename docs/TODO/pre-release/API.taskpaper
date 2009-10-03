@@ -13,15 +13,15 @@ Aliases API Class:
 - test remove
 
 Notify API Class:
-- add coloring to different types of notifications
+- add coloring to different types of notifications @done(2009-10-03)
 - all logging of notifications
-- test new
-- test send
-- test debug
-- test alert
-- test warning
-- test normal
-- test critical
+- test new @done(2009-10-03)
+- test send @removed @done(2009-10-03)
+- test debug @done(2009-10-03)
+- test alert @done(2009-10-03)
+- test warning @done(2009-10-03)
+- test normal @done(2009-10-03)
+- test critical @done(2009-10-03)
 
 Target API Class:
 - test new
