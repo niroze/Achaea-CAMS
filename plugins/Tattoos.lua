@@ -20,6 +20,7 @@ end
 -- Returns: 1 for true, 0 for false
 --
 function Tattoos:load()
+   return (1)
 end
 
 -- Returns a version string

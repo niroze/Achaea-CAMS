@@ -45,21 +45,26 @@ function Main:new()
 end
 
 function Main:init() 
-   -- Sanity check
-   self:sanity_check()
    
    -- Notify stored on this class to use globally
    self.notify = Notify:new()
+
+   -- Sanity check
+   self:sanity_check()
 
    -- Connect and initialize database
    self:load_database()
    
    -- Load plugins
+   self.notify:normal("Loading Plugins.")
    self:load_plugins()
 
    -- Initialize plugins
+   self.notify:normal("Initializing Plugins.")
    self:init_plugins()
    
+   self.notify:normal("Loading complete")
+
 end
 
 -- Ensure all directories are correct and permissions are kosher, etc
@@ -68,11 +73,11 @@ end
 
 -- Connect to the SQLite3 Database and store the connection on this class
 function Main:load_database()
-   self.notify:debug("Main:load_database(): Connecting to database")
+   --self.notify:debug("Main:load_database(): Connecting to database")
    env = luasql.sqlite3()
    con = env:connect(DATABASE_FILENAME)
    self.database = con
-   self.notify:debug("Main:load_database(): Connected to database")
+   --self.notify:debug("Main:load_database(): Connected to database")
 end
 
 -- Return database connection
@@ -86,7 +91,8 @@ end
 function Main:load_plugins()
    plugin_root = ROOT_PATH .. "plugins/"
    for plugin_file in io.popen("ls " .. plugin_root):lines() do
-      if string.find(plugin_file,"*.lua$") then 
+      if string.find(plugin_file,".lua$") then 
+	 --self.notify:debug("Lua Plugin file: " .. plugin_file)
 	 plugin_file_path = plugin_root .. plugin_file
 	 plugin_name = string.gsub(plugin_file, '.lua', '')
 	 plugin_file_code = loadfile(plugin_file_path)
@@ -95,7 +101,7 @@ function Main:load_plugins()
 	 plugin_loader_code() -- create a new instance of the plugin
 	 if PLUGINS[plugin_name]:load() == 1 then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
-	    self.notify:debug("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
+	    self.notify:normal("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
 	 end -- if
       end -- if
    end -- for
@@ -103,6 +109,10 @@ end
 
 function Main:init_plugins()
    -- loop through plugins, calling their init() function
+   for plugin_name, plugin_code in pairs(self.plugins) do
+      plugin_code:init()
+      self.notify:normal("Plugin initiated: " .. plugin_name .. " v" .. plugin_code:get_version())
+   end
 end
 
 function Main:get_database()
