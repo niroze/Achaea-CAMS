@@ -68,9 +68,11 @@ end
 
 -- Connect to the SQLite3 Database and store the connection on this class
 function Main:load_database()
+   self.notify:debug("Main:load_database(): Connecting to database")
    env = luasql.sqlite3()
    con = env:connect(DATABASE_FILENAME)
    self.database = con
+   self.notify:debug("Main:load_database(): Connected to database")
 end
 
 -- Return database connection
@@ -84,16 +86,16 @@ end
 function Main:load_plugins()
    plugin_root = ROOT_PATH .. "plugins/"
    for plugin_file in io.popen("ls " .. plugin_root):lines() do
-      if string.find(plugin_file,"Security.lua$") then 
+      if string.find(plugin_file,"*.lua$") then 
 	 plugin_file_path = plugin_root .. plugin_file
 	 plugin_name = string.gsub(plugin_file, '.lua', '')
 	 plugin_file_code = loadfile(plugin_file_path)
 	 plugin_file_code() -- load it into global namespace
 	 plugin_loader_code = loadstring('PLUGINS["' .. plugin_name .. '"]  = ' .. plugin_name .. ':new()')
 	 plugin_loader_code() -- create a new instance of the plugin
-	 if PLUGINS[plugin_name]:load() then
+	 if PLUGINS[plugin_name]:load() == 1 then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
-	    print ("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
+	    self.notify:debug("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
 	 end -- if
       end -- if
    end -- for
@@ -108,7 +110,7 @@ end
 
 function Main:tf(command)
    -- tf_eval(command)
-   print "Main:tf() => " .. command
+   print ("Main:tf() => " .. command .. "")
 end
 
 

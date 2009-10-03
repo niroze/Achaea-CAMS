@@ -24,7 +24,8 @@ end
 --	priority:		positive integer, 1 to 1000, default 500
 -----------------------------------------------------------------------
 function Trigger:add(name, group, is_enabled, glob, action, times, priority, from)
-   if is_enabled != 1 then is_enabled = 0 end
+
+   if is_enabled ~= 1 then is_enabled = 0 end
    if priority > 1000 then priority = 1000 end
    if priority < 1 then priority = 1 end
    if priority == '' then priority = 500 end
