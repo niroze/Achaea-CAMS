@@ -2,20 +2,24 @@
 -- Aliases wrapper class for TF
 --
 
-Alias = {}
-Alias_mt = {}
+Aliases = {}
+Aliases_mt = {}
 
-function Alias:new()
+function Aliases:new()
    class = {}
-   setmetatable(class, Alias_mt)
-   Alias_mt.__index = Alias
+   setmetatable(class, Aliases_mt)
+   Aliases_mt.__index = Aliases
    return (class)
 end
 
 -- Add an alias
-function Alias:add(name, action)
+function Aliases:add(name, action)
+   CAMS.notify:debug("Aliases:add(name,action): {{" .. name .. "}} => {{" .. action .. "}}")
+   tf_eval('/def cams_alias_' .. name .. ' = /calllua ' .. action .. '%{*}')
 end
 
 -- Remove an alias
-function Alias:remove(name)
+function Aliases:remove(name)
+   CAMS.notify:debug("Aliases:remove(name): {{" .. name .. "}}")
+   tf_evail('/purge cams_alias_' .. name)
 end

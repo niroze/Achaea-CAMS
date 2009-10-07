@@ -1,15 +1,15 @@
 -- 
--- Trigger wrapper class for TF
+-- Triggers wrapper class for TF
 --
 
-Trigger = {}
-Trigger_mt = {}
+Triggers = {}
+Triggers_mt = {}
 
-function Trigger:new()
+function Triggers:new()
    class = {}
    class.dbconn = CAMS:get_database()
-   setmetatable(class, Trigger_mt)
-   Trigger_mt.__index = Trigger
+   setmetatable(class, Triggers_mt)
+   Triggers_mt.__index = Triggers
    return (class)
 end
 
@@ -23,7 +23,7 @@ end
 --	times:			how many times to keep alive (defaults to permanent)
 --	priority:		positive integer, 1 to 1000, default 500
 -----------------------------------------------------------------------
-function Trigger:add(name, group, is_enabled, glob, action, times, priority, from)
+function Triggers:add(name, group, is_enabled, glob, action, times, priority, from)
 
    if is_enabled ~= 1 then is_enabled = 0 end
    if priority > 1000 then priority = 1000 end
@@ -54,7 +54,7 @@ end
 
 
 -- Remove trigger by name
-function Trigger:remove(name)
+function Triggers:remove(name)
    -- Find record in triggers table
    local trig_select_sql = string.format("select * from triggers where name = '%s'", name)
    local trig_select_cur = self.dbconn:execute(sql_trig_select)
@@ -71,27 +71,27 @@ function Trigger:remove(name)
 end
 
 -- Remove triggers by group
-function Trigger:remove_group(group)
+function Triggers:remove_group(group)
    -- Find names of triggers
    -- call self:remove on each name
 end
 
 -- Disable trigger by name
-function Trigger:disable(name)
+function Triggers:disable(name)
 end
 
 -- Disable triggers by group
-function Trigger:disable_group(group)
+function Triggers:disable_group(group)
 end
 
 -- Enable trigger by name
-function Trigger:enable(name)
+function Triggers:enable(name)
 end
 
 -- Enable triggers by group
-function Trigger:enable_group(group)
+function Triggers:enable_group(group)
 end
 
 -- Change trigger action, by name
-function Trigger:change_action(name, action)
+function Triggers:change_action(name, action)
 end

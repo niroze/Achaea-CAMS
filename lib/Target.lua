@@ -2,25 +2,27 @@
 -- Generic targeting
 --
 
-Target = {}
-Target_mt = {}
+Targeting = {}
+Targeting_mt = {}
 
-function Target:new()
+function Targeting:new()
    class = {}
-   class.target = ""
-   setmetatable(class, Target_mt)
-   Target_mt.__index = Target
+   class.target = ''
+   setmetatable(class, Targeting_mt)
+   Targeting_mt.__index = Targeting
    return (class)
 end
 
-function Target:set(who)
+function Targeting:set(who)
+   CAMS.notify:debug('Targetting:set(who): who => {{' .. who .. '}}')
    self.target = who
 end
 
-function Target:get()
+function Targeting:get()
+   CAMS.notify:debug('Targetting:get(): returning {{' .. self.target .. '}}')
    return (self.target)
 end
 
-function Target:clear()
-   self.target = ""
+function Targeting:clear()
+   self.target = ''
 end

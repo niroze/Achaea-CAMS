@@ -24,6 +24,7 @@ require "Triggers"        -- TF trigger wrapper
 require "Aliases"         -- TF "alias" wrapper
 require "Settings"        -- CAMS settings (global and plugin use)
 require "Notify"          -- TF echo wrappers, colored notices (alert, debug, etc)
+require "Targeting"       -- Single target targetting
 
 
 -- Globals
@@ -48,6 +49,18 @@ function Main:init()
    
    -- Notify stored on this class to use globally
    self.notify = Notify:new()
+
+   -- Aliases stored on this class to use globally
+   self.aliases = Aliases:new()
+
+   -- Triggers stored on this class to use globally
+   self.triggers = Triggers:new()
+
+   -- Targetting stored on this class to use globally
+   self.targeting = Targeting:new()
+
+   -- Settings stored on this class to use globally
+   self.settings = Settings:new()
 
    -- Sanity check
    self:sanity_check()

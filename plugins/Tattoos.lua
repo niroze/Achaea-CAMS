@@ -36,3 +36,7 @@ function Tattoos:get_whoami()
    return (self.whoami)
 end
 
+function process_command (str)
+   CAMS.notify:debug(self.whoami .. ":process_command(str): str => {{" .. str .. "}}")
+   
+end
