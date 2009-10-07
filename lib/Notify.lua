@@ -13,8 +13,10 @@ function Notify:new()
 end
 
 function Notify:debug(msg)
-   message = "DEBUG: " .. msg
-   tf_eval("/echo -p @{Cyellow,Cbgblue}[CAMS]@{Cblack,Cbgblack} @{Cblack,Cbggreen}" .. msg)
+   if DEBUG == 1 then
+      message = "DEBUG: " .. msg
+      tf_eval("/echo -p @{Cyellow,Cbgblue}[CAMS]@{Cblack,Cbgblack} @{Cblack,Cbggreen}" .. msg)
+   end
 end
 
 function Notify:alert(msg)

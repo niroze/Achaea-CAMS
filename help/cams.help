@@ -1,0 +1,11 @@
+name: cams
+related: lua, plugin, module, api
+
+CAMS stands for Christopher's Achaea Module System, written by
+Christopher Humphries (Drauka in-game).
+
+It's purpose is to provide an easy to code in environment using Lua
+without having to mess with TF's ugly macro language. It does this by
+providing a Lua based API for doing such things as adding triggers,
+create aliases, and writing plugins to name a few.
+

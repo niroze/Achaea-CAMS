@@ -31,7 +31,7 @@ require "Targeting"       -- Single target targetting
 DATABASE_ROOT_PATH = ROOT_PATH .. "database/"
 DATABASE_FILENAME = DATABASE_ROOT_PATH .. "CAMS.db"
 PLUGINS = {}
-
+DEBUG = 1
 
 -- Main
 Main = {}
@@ -69,14 +69,14 @@ function Main:init()
    self:load_database()
    
    -- Load plugins
-   self.notify:normal("Loading Plugins.")
+   self.notify:normal('Loading Plugins.')
    self:load_plugins()
 
    -- Initialize plugins
-   self.notify:normal("Initializing Plugins.")
+   self.notify:normal('Initializing Plugins.')
    self:init_plugins()
    
-   self.notify:normal("Loading complete")
+   self.notify:normal('Loading complete')
 
 end
 
@@ -102,9 +102,9 @@ end
 
 -- Load all loadable plugins
 function Main:load_plugins()
-   plugin_root = ROOT_PATH .. "plugins/"
-   for plugin_file in io.popen("ls " .. plugin_root):lines() do
-      if string.find(plugin_file,".lua$") then 
+   plugin_root = ROOT_PATH .. 'plugins/'
+   for plugin_file in io.popen('ls ' .. plugin_root):lines() do
+      if string.find(plugin_file,'.lua$') then 
 	 --self.notify:debug("Lua Plugin file: " .. plugin_file)
 	 plugin_file_path = plugin_root .. plugin_file
 	 plugin_name = string.gsub(plugin_file, '.lua', '')
@@ -114,7 +114,7 @@ function Main:load_plugins()
 	 plugin_loader_code() -- create a new instance of the plugin
 	 if PLUGINS[plugin_name]:load() == 1 then
 	    self.plugins[plugin_name] = PLUGINS[plugin_name]
-	    self.notify:normal("Plugin Loaded: " .. plugin_name .. " v" .. self.plugins[plugin_name]:get_version())
+	    self.notify:normal('Plugin Loaded: ' .. plugin_name .. ' v' .. self.plugins[plugin_name]:get_version())
 	 end -- if
       end -- if
    end -- for
@@ -124,7 +124,7 @@ function Main:init_plugins()
    -- loop through plugins, calling their init() function
    for plugin_name, plugin_code in pairs(self.plugins) do
       plugin_code:init()
-      self.notify:normal("Plugin initiated: " .. plugin_name .. " v" .. plugin_code:get_version())
+      self.notify:normal('Plugin initiated: ' .. plugin_name .. ' v' .. plugin_code:get_version())
    end
 end
 
@@ -132,8 +132,8 @@ function Main:get_database()
 end
 
 function Main:tf(command)
-   -- tf_eval(command)
-   print ("Main:tf() => " .. command .. "")
+   self.notify:debug('Main:tf() => ' .. command)
+   tf_eval(command)
 end
 
 

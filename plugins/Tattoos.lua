@@ -30,6 +30,7 @@ end
 
 -- Called when the plugin is initialized by CAMS (NOT when it is loaded)
 function Tattoos:init()
+   -- Setup alias for /tattoos command
 end
 
 function Tattoos:get_whoami()
@@ -37,6 +38,5 @@ function Tattoos:get_whoami()
 end
 
 function process_command (str)
-   CAMS.notify:debug(self.whoami .. ":process_command(str): str => {{" .. str .. "}}")
-   
+   CAMS.notify:debug(self.whoami .. ":process_command(str): str => {{" .. str .. "}}")   
 end

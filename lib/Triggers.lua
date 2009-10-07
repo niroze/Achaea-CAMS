@@ -33,7 +33,7 @@ function Triggers:add(name, group, is_enabled, glob, action, times, priority, fr
    if group == '' then group = 'default' end
 
    -- TF command
-   local tf_command = '/def -t"' .. glob .. ' -n' .. times .. '-p' .. priority  ..'" cams_trig_' .. group .. '_' .. name .. ' = /calllua ' .. action .. '%{*}'
+   local tf_command = '/def -t"' .. glob .. ' -n' .. times .. '-p' .. priority  ..'" cams_trig_' .. group .. '_' .. name .. ' = /calllua ' .. action .. ' %{*}'
    CAMS:tf(tf_command)
 
    -- Insert into databse

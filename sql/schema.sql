@@ -47,3 +47,19 @@ create table settings_plugins (
 );
 create index setting_plugins_plugin_name_idx on settings_plugins (plugin_name);
 create index setting_plugins_setting_name_idx on settings_plugins (setting_name);
+
+
+
+--
+-- Help key/value
+--
+drop table if exists help;
+create table help (
+      term                 varchar (40) unique not null,
+      related              varchar(255),
+      text                 text,
+      shelf                varchar(255),
+      primary key (term)
+);
+create index help_term_idx on help (term);
+

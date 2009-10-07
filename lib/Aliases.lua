@@ -15,11 +15,11 @@ end
 -- Add an alias
 function Aliases:add(name, action)
    CAMS.notify:debug("Aliases:add(name,action): {{" .. name .. "}} => {{" .. action .. "}}")
-   tf_eval('/def cams_alias_' .. name .. ' = /calllua ' .. action .. '%{*}')
+   CAMS:tf('/def cams_alias_' .. name .. ' = /calllua ' .. action .. ' %{*}')
 end
 
 -- Remove an alias
 function Aliases:remove(name)
    CAMS.notify:debug("Aliases:remove(name): {{" .. name .. "}}")
-   tf_evail('/purge cams_alias_' .. name)
+   CAMS:tf('/purge cams_alias_' .. name)
 end
