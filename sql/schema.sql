@@ -51,14 +51,14 @@ create index setting_plugins_setting_name_idx on settings_plugins (setting_name)
 
 
 --
--- Help key/value
+-- Help data, populated from files in the help directory 
 --
 drop table if exists help;
 create table help (
       term                 varchar (40) unique not null,
       related              varchar(255),
-      text                 text,
-      shelf                varchar(255),
+      body                 text,
+      shelf                varchar(255), -- path off help/
       primary key (term)
 );
 create index help_term_idx on help (term);
