@@ -11,6 +11,7 @@ Lua libraries That Need To Be Installed By You
 
 Luasql (with sqlite3 support builtin):
 - http://www.keplerproject.org/luasql/
+--> On Ubuntu 9.10: "apt-get install liblua5.1-sql-sqlite3-2"
 
 
 
